@@ -1,9 +1,6 @@
 import numpy as np
-import math, re, os, cv2
 import tensorflow as tf, tensorflow.keras.backend as K
 import tensorflow_probability as tfp
-import numpy as np
-from matplotlib import pyplot as plt
 from .transformations import *
 
 means = {'R': 0.44892993872313053, 'G': 0.4148519066242368, 'B': 0.301880284715257}
