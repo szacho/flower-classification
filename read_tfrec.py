@@ -1,11 +1,7 @@
 import tensorflow as tf
-import cv2
+from config import IMAGE_SIZE
 
 AUTO = tf.data.experimental.AUTOTUNE
-IMAGE_SIZE = [512, 512]
-PATH = "D:\\Data Science\\Datasets\\flowers\\tfrec\\tfrecords-jpeg-512x512\\train\\"
-
-TFREC_FILENAMES = tf.io.gfile.glob(PATH + '*.tfrec')
 
 def decode_image(image_data):
     image = tf.image.decode_jpeg(image_data, channels=3)
@@ -45,12 +41,3 @@ def load_dataset(filenames, labeled = True, ordered = False):
     dataset = dataset.with_options(ignore_order) # use data as soon as it streams in, rather than in its original order
     dataset = dataset.map(read_labeled_tfrecord if labeled else read_unlabeled_tfrecord, num_parallel_calls = AUTO) # returns a dataset of (image, label) pairs if labeled = True or (image, id) pair if labeld = False
     return dataset
-
-
-if __name__ == "__main__":
-    ds = load_dataset(TFREC_FILENAMES)
-
-    for image, label in ds.take(1):
-        image = cv2.cvtColor(image.numpy(), cv2.COLOR_RGB2BGR)
-        cv2.imshow('test', image)
-        cv2.waitKey(0)
