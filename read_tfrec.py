@@ -1,6 +1,7 @@
 import re
 import numpy as np
 import tensorflow as tf
+from augmix.augmix import augmix
 from config import IMAGE_SIZE
 
 AUTO = tf.data.experimental.AUTOTUNE

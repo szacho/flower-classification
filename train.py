@@ -1,5 +1,7 @@
 import tensorflow as tf, tensorflow.keras.backend as K
 import matplotlib.pyplot as plt
+import time
+from collections import namedtuple
 from tpu_init import initialize_tpu
 from read_tfrec import count_data_items, int_div_round_up, get_training_dataset, get_validation_dataset
 from config import TRAINING_FILENAMES, VALIDATION_FILENAMES, TEST_FILENAMES, OXFORD_FILENAMES, get_batch_size, EPOCHS, IMAGE_SIZE, CLASSES
@@ -131,3 +133,76 @@ with strategy.scope():
     valid_loss = tf.keras.metrics.Sum()
     
     loss_fn = tf.keras.losses.sparse_categorical_crossentropy
+
+# TRAINING LOOP (based on this notebook https://www.kaggle.com/mgornergoogle/custom-training-loop-with-100-flowers-on-tpu)
+start_time = epoch_start_time = time.time()
+# distribute the dataset according to the strategy
+
+train_dist_ds = strategy.experimental_distribute_dataset(get_training_dataset(TRAINING_FILENAMES, BATCH_SIZE))
+valid_dist_ds = strategy.experimental_distribute_dataset(get_validation_dataset(VALIDATION_FILENAMES, BATCH_SIZE, repeated=True))
+
+print("Training steps per epoch:", STEPS_PER_EPOCH, "in increments of", STEPS_PER_TPU_CALL)
+print("Validation images:", NUM_VALIDATION_IMAGES,
+      "Batch size:", BATCH_SIZE,
+      "Validation steps:", NUM_VALIDATION_IMAGES//BATCH_SIZE, "in increments of", VALIDATION_STEPS_PER_TPU_CALL)
+print("Repeated validation images:", int_div_round_up(NUM_VALIDATION_IMAGES, BATCH_SIZE*VALIDATION_STEPS_PER_TPU_CALL)*VALIDATION_STEPS_PER_TPU_CALL*BATCH_SIZE-NUM_VALIDATION_IMAGES)
+History = namedtuple('History', 'history')
+history = History(history={'loss': [], 'val_loss': [], 'sparse_categorical_accuracy': [], 'val_sparse_categorical_accuracy': []})
+
+epoch = 0
+train_data_iter = iter(train_dist_ds) 
+valid_data_iter = iter(valid_dist_ds)
+
+step = 0
+epoch_steps = 0
+while True:
+    
+    # run training step
+    train_step(train_data_iter)
+    epoch_steps += STEPS_PER_TPU_CALL
+    step += STEPS_PER_TPU_CALL
+    print('=', end='', flush=True)
+
+    # validation run at the end of each epoch
+    if (step // STEPS_PER_EPOCH) > epoch:
+        print('|', end='', flush=True)
+        
+        # validation run
+        valid_epoch_steps = 0
+        for _ in range(int_div_round_up(NUM_VALIDATION_IMAGES, BATCH_SIZE*VALIDATION_STEPS_PER_TPU_CALL)):
+            valid_step(valid_data_iter)
+            valid_epoch_steps += VALIDATION_STEPS_PER_TPU_CALL
+            print('=', end='', flush=True)
+
+        # compute metrics
+        history.history['sparse_categorical_accuracy'].append(train_accuracy.result().numpy())
+        history.history['val_sparse_categorical_accuracy'].append(valid_accuracy.result().numpy())
+        history.history['loss'].append(train_loss.result().numpy() / (BATCH_SIZE*epoch_steps))
+        history.history['val_loss'].append(valid_loss.result().numpy() / (BATCH_SIZE*valid_epoch_steps))
+        
+        # report metrics
+        epoch_time = time.time() - epoch_start_time
+        print('\nEPOCH {:d}/{:d}'.format(epoch+1, EPOCHS))
+        print('time: {:0.1f}s'.format(epoch_time),
+              'loss: {:0.4f}'.format(history.history['loss'][-1]),
+              'accuracy: {:0.4f}'.format(history.history['sparse_categorical_accuracy'][-1]),
+              'val_loss: {:0.4f}'.format(history.history['val_loss'][-1]),
+              'val_acc: {:0.4f}'.format(history.history['val_sparse_categorical_accuracy'][-1]),
+              'lr: {:0.4g}'.format(lrfn(epoch)),
+              'steps/val_steps: {:d}/{:d}'.format(epoch_steps, valid_epoch_steps), flush=True)
+        
+        # set up next epoch
+        epoch = step // STEPS_PER_EPOCH
+        epoch_steps = 0
+        epoch_start_time = time.time()
+        train_accuracy.reset_states()
+        valid_accuracy.reset_states()
+        valid_loss.reset_states()
+        train_loss.reset_states()
+        if epoch >= EPOCHS:
+            break
+
+optimized_ctl_training_time = time.time() - start_time
+print("OPTIMIZED CTL TRAINING TIME: {:0.1f}s".format(optimized_ctl_training_time))
+
+model.save('flower_model.h5')
