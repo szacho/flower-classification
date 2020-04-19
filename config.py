@@ -1,3 +1,26 @@
+import tensorflow as tf
+
+KAGGLE_DS_PATH = "D:\\Data Science\\Datasets\\flowers\\tfrec\\"
+OXFORD_DS_PATH = "D:\\Data Science\\Datasets\\flowers\\external\\oxford\\oxford_tfrec\\"
+
+IMAGE_SIZE = [224, 224]
+EPOCHS = 20
+get_batch_size = lambda strategy: 16 * strategy.num_replicas_in_sync
+
+PATH_SELECT = { # available image sizes
+    192: 'tfrecords-jpeg-192x192',
+    224: 'tfrecords-jpeg-224x224',
+    331: 'tfrecords-jpeg-331x331',
+    512: 'tfrecords-jpeg-512x512'
+}
+
+TFREC_DIR = PATH_SELECT[IMAGE_SIZE[0]]
+
+TRAINING_FILENAMES = tf.io.gfile.glob(f'{KAGGLE_DS_PATH}{TFREC_DIR}\\train\\*.tfrec')
+VALIDATION_FILENAMES = tf.io.gfile.glob(f'{KAGGLE_DS_PATH}{TFREC_DIR}\\val\\*.tfrec')
+TEST_FILENAMES = tf.io.gfile.glob(f'{KAGGLE_DS_PATH}{TFREC_DIR}\\test\\*.tfrec') # predictions on this dataset should be submitted for the competition
+OXFORD_FILENAMES = tf.io.gfile.glob(f'{OXFORD_DS_PATH}{TFREC_DIR}\\*.tfrec')
+
 CLASSES = ['pink primrose',    'hard-leaved pocket orchid', 'canterbury bells', 'sweet pea',     'wild geranium',     'tiger lily',           'moon orchid',              'bird of paradise', 'monkshood',        'globe thistle',         # 00 - 09
            'snapdragon',       "colt's foot",               'king protea',      'spear thistle', 'yellow iris',       'globe-flower',         'purple coneflower',        'peruvian lily',    'balloon flower',   'giant white arum lily', # 10 - 19
            'fire lily',        'pincushion flower',         'fritillary',       'red ginger',    'grape hyacinth',    'corn poppy',           'prince of wales feathers', 'stemless gentian', 'artichoke',        'sweet william',         # 20 - 29
