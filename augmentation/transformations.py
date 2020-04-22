@@ -5,7 +5,6 @@ from .helpers import *
 
 import sys
 sys.path.append("..")
-from config import IMAGE_SIZE
 
 def rotate(image, level):
     degrees = float_parameter(sample_level(level), 30)
@@ -25,7 +24,7 @@ def rotate(image, level):
     return transformed
 
 def translate_x(image, level):
-    lvl = int_parameter(sample_level(level), IMAGE_SIZE[0] / 3)
+    lvl = int_parameter(sample_level(level), image.shape[0] / 3)
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
     lvl = tf.cond(rand_var > 0.5, lambda: lvl, lambda: -lvl)
 
@@ -38,7 +37,7 @@ def translate_x(image, level):
     return transformed
 
 def translate_y(image, level):
-    lvl = int_parameter(sample_level(level), IMAGE_SIZE[0] / 3)
+    lvl = int_parameter(sample_level(level), image.shape[0] / 3)
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
     lvl = tf.cond(rand_var > 0.5, lambda: lvl, lambda: -lvl)
 

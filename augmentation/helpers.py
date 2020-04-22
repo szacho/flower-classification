@@ -1,9 +1,7 @@
 import tensorflow as tf, tensorflow.keras.backend as K
 
-
 import sys
 sys.path.append("..")
-from config import IMAGE_SIZE
 
 def int_parameter(level, maxval):
     return tf.cast(level * maxval / 10, tf.int32)
@@ -16,7 +14,7 @@ def sample_level(n):
     
 def affine_transform(image, transform_matrix):
     # input image - is one image of size [dim,dim,3] not a batch of [b,dim,dim,3]
-    DIM = IMAGE_SIZE[0]
+    DIM = image.shape[0]
     XDIM = DIM%2 #fix for size 331
     
     x = tf.repeat(tf.range(DIM//2,-DIM//2,-1), DIM)

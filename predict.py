@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 from config import IMAGE_SIZE
 
-parser = argparse.ArgumentParser(description="Flower classification app using MobileNet")
+parser = argparse.ArgumentParser(description="Simple image classification script.")
 
 parser.add_argument('image_path', action='store', type=str, help='path to the flower image')
 parser.add_argument('model_path', action='store', type=str, help='path to saved model (.h5)')
