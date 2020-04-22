@@ -42,7 +42,7 @@ augmented = augmix(image, severity=6, width=3, depth=-1)
 dataset = dataset.map(lambda  img, label: (img, augmix(img), augmix(img), label))
 ```
 **Visualization** of AugMix
-![visualization of augmix](https://i.ibb.co/cNqrq6c/augmix-vis.png)
+![visualization of augmix](https://raw.githubusercontent.com/szacho/flower-classification/master/augmentation/augmix_vis.png)
 ### Predicting from a file
 To predict a flower specie from .jpg file you need:
 - jpg image file (like in /test_images directory)
