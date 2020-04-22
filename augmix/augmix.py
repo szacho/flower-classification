@@ -33,10 +33,20 @@ def apply_op(image, level, which):
     augmented = tf.cond(which == tf.constant([12], dtype=tf.int32), lambda: brightness(image, level), lambda: augmented)
     return augmented
 
-def augmix(image):
-    severity = 3 # level of transformations as described above in transformations (integer from 1 to 10)
-    width = 3 # number of different chains of transformations to be mixed
-    depth = -1 # number of transformations in one chain, -1 means random from 1 to 3
+def augmix(image, severity=3, width=3, depth=-1):
+    """ 
+    Performs AugMix data augmentation on given image.
+
+    Parameters: 
+    image (tf tensor): an image tensor with shape (x, y, 3) and values scaled to range [0, 1]
+    severity (int): level of strength of transformations (integer from 1 to 10)
+    width (int): number of different chains of transformations to be mixed
+    depth (int): number of transformations in one chain, -1 means random from 1 to 3
+  
+    Returns: 
+    tensor: augmented image
+  
+    """
     
     alpha = 1.
     dir_dist = tfp.distributions.Dirichlet([alpha]*width)
