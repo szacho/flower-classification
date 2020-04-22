@@ -1,6 +1,6 @@
 # Flower Classification with TPUs 
 
-This project evaluates the usability of data augmentation on an imbalanced dataset and provides a console app for predicting flower species from a file. The MobileNetV2 architecture was fine-tuned on this [Kaggle competition dataset](https://www.kaggle.com/c/flower-classification-with-tpus/data) and a part of [Oxford 102 Flower](https://www.kaggle.com/szacho/oxford-102-for-tpu-competition). The first model used [AugMix](https://arxiv.org/pdf/1912.02781.pdf) data augmentation in concert with a special loss function. Both AugMix and special loss were implemented from scratch in TensorFlow and are available in this repository. The second model was trained with no augmentation. 
+This project evaluates the usability of data augmentation on an imbalanced dataset and provides a console app for predicting flower species from a file. The MobileNetV2 architecture was fine-tuned on this [Kaggle competition dataset](https://www.kaggle.com/c/flower-classification-with-tpus/data) and a part of [Oxford 102 Flower](https://www.kaggle.com/szacho/oxford-102-for-tpu-competition). The first model used [AugMix](https://arxiv.org/pdf/1912.02781.pdf) data augmentation in concert with a special loss function. Both AugMix and special loss were implemented from scratch in TensorFlow (thus it can be run on TPU) and are available in this repository. The second model was trained with no augmentation. 
 
 ## Usage
 ### AugMix
