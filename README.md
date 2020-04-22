@@ -44,8 +44,8 @@ dataset = dataset.map(lambda  img, label: (img, augmix(img), augmix(img), label)
 **Visualization** of AugMix
 ![visualization of augmix](https://raw.githubusercontent.com/szacho/flower-classification/master/augmentation/augmix_vis.png)
 ### Predicting from a file
-To predict a flower specie from .jpg file you need:
-- jpg image file (like in /test_images directory)
+To predict a flower specie from a .jpg file you need:
+- jpg image file (like one in /test_images directory)
 - h5 trained model (see /models folder)
 - labels mapping dictionary (like one in file flower_mapping.json)
 - installed: 
@@ -86,7 +86,7 @@ Top 5 probabilities for image test_images/passion_flower.jpg:
 
 ## More information
 - [AugMix](https://arxiv.org/pdf/1912.02781.pdf)
-- [Tensor Processor Unit (TPU)](https://www.kaggle.com/docs/tpu) 
+- [Tensor Processing Unit (TPU)](https://www.kaggle.com/docs/tpu) 
 
 ## Conclusion
 After evaluating models with several configurations, there is clearly no benefit from data augmentation on this dataset. Model with AugMix performs as good as with no augmentation at all, the reason might be that this dataset is strongly imbalanced. 
