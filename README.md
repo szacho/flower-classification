@@ -54,6 +54,7 @@ To predict a flower specie from .jpg file you need:
 	- pillow
 
 Then, you will be able to run ```predict.py``` script. It takes 2 positional and 2 optional arguments as described in help:
+
 ```>> python predict.py -h```
 ```
 usage: predict.py [-h] [--top_k TOP_K] [--category_names CATEGORY_NAMES]
@@ -72,6 +73,7 @@ optional arguments:
                         dictionary for mapping labels (json file)
 ```
 **Example**
+
 ```>> python predict.py test_images/passion_flower.jpg models/mobilenet_adam.h5 --top_k 5```
 ```
 Top 5 probabilities for image test_images/passion_flower.jpg:
