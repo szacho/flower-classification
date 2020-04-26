@@ -1,6 +1,6 @@
 # Flower Classification with TPUs 
 
-This project evaluates the usability of data augmentation on an imbalanced dataset and provides a console app for predicting flower species from a file. The MobileNetV2 architecture was fine-tuned on this [Kaggle competition dataset](https://www.kaggle.com/c/flower-classification-with-tpus/data) and a part of [Oxford 102 Flower](https://www.kaggle.com/szacho/oxford-102-for-tpu-competition). The first model used [AugMix](https://arxiv.org/pdf/1912.02781.pdf) data augmentation in concert with a special loss function. Both AugMix and special loss were implemented from scratch in TensorFlow and are available in this repository. The second model was trained with no augmentation. 
+This project evaluates the usability of data augmentation on an imbalanced dataset and provides a console app for predicting flower species from a file. The MobileNetV2 architecture was fine-tuned on this [Kaggle competition dataset](https://www.kaggle.com/c/flower-classification-with-tpus/data) and a part of [Oxford 102 Flower](https://www.kaggle.com/szacho/oxford-102-for-tpu-competition). The first model used [AugMix](https://arxiv.org/pdf/1912.02781.pdf) data augmentation in concert with a special loss function. Both AugMix and special loss were implemented from scratch in TensorFlow (thus it can be run on TPU) and are available in this repository. The second model was trained with no augmentation. 
 
 ## Usage
 ### AugMix
@@ -42,10 +42,10 @@ augmented = augmix(image, severity=6, width=3, depth=-1)
 dataset = dataset.map(lambda  img, label: (img, augmix(img), augmix(img), label))
 ```
 **Visualization** of AugMix
-![visualization of augmix](https://i.ibb.co/cNqrq6c/augmix-vis.png)
+![visualization of augmix](https://raw.githubusercontent.com/szacho/flower-classification/master/augmentation/augmix_vis.png)
 ### Predicting from a file
-To predict a flower specie from .jpg file you need:
-- jpg image file (like in /test_images directory)
+To predict a flower specie from a .jpg file you need:
+- jpg image file (like one in /test_images directory)
 - h5 trained model (see /models folder)
 - labels mapping dictionary (like one in file flower_mapping.json)
 - installed: 
@@ -54,6 +54,7 @@ To predict a flower specie from .jpg file you need:
 	- pillow
 
 Then, you will be able to run ```predict.py``` script. It takes 2 positional and 2 optional arguments as described in help:
+
 ```>> python predict.py -h```
 ```
 usage: predict.py [-h] [--top_k TOP_K] [--category_names CATEGORY_NAMES]
@@ -72,6 +73,7 @@ optional arguments:
                         dictionary for mapping labels (json file)
 ```
 **Example**
+
 ```>> python predict.py test_images/passion_flower.jpg models/mobilenet_adam.h5 --top_k 5```
 ```
 Top 5 probabilities for image test_images/passion_flower.jpg:
@@ -84,7 +86,7 @@ Top 5 probabilities for image test_images/passion_flower.jpg:
 
 ## More information
 - [AugMix](https://arxiv.org/pdf/1912.02781.pdf)
-- [Tensor Processor Unit (TPU)](https://www.kaggle.com/docs/tpu) 
+- [Tensor Processing Unit (TPU)](https://www.kaggle.com/docs/tpu) 
 
 ## Conclusion
 After evaluating models with several configurations, there is clearly no benefit from data augmentation on this dataset. Model with AugMix performs as good as with no augmentation at all, the reason might be that this dataset is strongly imbalanced. 
